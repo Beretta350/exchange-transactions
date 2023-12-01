@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  application:
+    container_name: exchange-transactions
+    environment:
+      - POSTGRES_URL=host=postgres user=postgres password=postgres dbname=localdb port=5432 sslmode=disable
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./build/libs/:/tmp
+
+  postgres:
+    image: postgres:latest
+    restart: always
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=localdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./env/db/data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U postgres -d localdb'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
