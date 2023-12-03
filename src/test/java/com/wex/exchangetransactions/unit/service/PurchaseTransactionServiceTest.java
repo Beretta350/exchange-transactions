@@ -1,4 +1,4 @@
 package com.wex.exchangetransactions.unit.service;
 
-public class TransactionServiceTest {
+public class PurchaseTransactionServiceTest {
 }
