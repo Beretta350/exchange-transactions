@@ -1,6 +1,6 @@
 package com.wex.exchangetransactions.unit.mapper;
-import com.wex.exchangetransactions.dto.CreatePurchaseTransactionResponseDTO;
-import com.wex.exchangetransactions.dto.PurchaseTransactionDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionRequestDTO;
 import com.wex.exchangetransactions.mapper.PurchaseTransactionMapper;
 import com.wex.exchangetransactions.model.PurchaseTransactionModel;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class PurchaseTransactionMapperTest {
+public class PurchaseTransactionMapperTest {
 
     @Test
     void toCreateResponseDtoTest() {
@@ -19,7 +19,7 @@ class PurchaseTransactionMapperTest {
         PurchaseTransactionModel model = new PurchaseTransactionModel(
                 transactionId, 12.22, "Test Description", LocalDate.now(), LocalDateTime.now());
 
-        CreatePurchaseTransactionResponseDTO dto = PurchaseTransactionMapper.toCreateResponseDto(model);
+        PurchaseTransactionResponseDTO dto = PurchaseTransactionMapper.toResponseDto(model);
 
         assertNotNull(dto);
         assertEquals(transactionId.toString(), dto.id());
@@ -32,7 +32,7 @@ class PurchaseTransactionMapperTest {
         PurchaseTransactionModel model = new PurchaseTransactionModel(
                 transactionId, 12.22, "Test Description", LocalDate.now(), LocalDateTime.now());
 
-        PurchaseTransactionDTO dto = PurchaseTransactionMapper.toDto(model);
+        PurchaseTransactionRequestDTO dto = PurchaseTransactionMapper.toRequestDto(model);
 
         assertNotNull(dto);
         assertEquals(model.getAmount(), dto.amount());
@@ -42,13 +42,13 @@ class PurchaseTransactionMapperTest {
 
     @Test
     void toModelTest() {
-        PurchaseTransactionDTO dto =
-                new PurchaseTransactionDTO(30.50, "Test Description", LocalDate.now());
+        PurchaseTransactionRequestDTO dto =
+                new PurchaseTransactionRequestDTO(30.54321, "Test Description", LocalDate.now());
 
         PurchaseTransactionModel model = PurchaseTransactionMapper.toModel(dto);
 
         assertNotNull(model);
-        assertEquals(30.5, model.getAmount());
+        assertEquals(30.54, model.getAmount());
         assertEquals(dto.description(), model.getDescription());
     }
 }

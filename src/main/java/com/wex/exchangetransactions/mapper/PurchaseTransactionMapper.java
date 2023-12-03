@@ -1,7 +1,7 @@
 package com.wex.exchangetransactions.mapper;
 
-import com.wex.exchangetransactions.dto.CreatePurchaseTransactionResponseDTO;
-import com.wex.exchangetransactions.dto.PurchaseTransactionDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionRequestDTO;
 import com.wex.exchangetransactions.model.PurchaseTransactionModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,23 +13,28 @@ import java.time.LocalDateTime;
 @Slf4j
 public class PurchaseTransactionMapper {
 
-    public static CreatePurchaseTransactionResponseDTO toCreateResponseDto(PurchaseTransactionModel model){
-        log.info("Class=PurchaseTransactionMapper Method=toCreateResponseDto id={}", model.getId());
-        return new CreatePurchaseTransactionResponseDTO(
+    private PurchaseTransactionMapper() {}
+
+    public static PurchaseTransactionResponseDTO toResponseDto(PurchaseTransactionModel model){
+        log.info("Class=PurchaseTransactionMapper Method=toResponseDto id={}", model.getId());
+        return new PurchaseTransactionResponseDTO(
                 model.getId().toString(),
+                model.getAmount(),
+                model.getDescription(),
+                model.getTransactionDate(),
                 model.getTransactionTimestamp());
     }
 
-    public static PurchaseTransactionDTO toDto(PurchaseTransactionModel model){
-        log.info("Class=PurchaseTransactionMapper Method=toDto id={}", model.getId());
-        return new PurchaseTransactionDTO(
+    public static PurchaseTransactionRequestDTO toRequestDto(PurchaseTransactionModel model){
+        log.info("Class=PurchaseTransactionMapper Method=toRequestDto id={}", model.getId());
+        return new PurchaseTransactionRequestDTO(
                 model.getAmount(),
                 model.getDescription(),
                 model.getTransactionDate());
     }
 
 
-    public static PurchaseTransactionModel toModel(PurchaseTransactionDTO dto){
+    public static PurchaseTransactionModel toModel(PurchaseTransactionRequestDTO dto){
         log.info(
             "Class=PurchaseTransactionMapper Method=toModel amount={} description={}",
             dto.amount(), dto.description()

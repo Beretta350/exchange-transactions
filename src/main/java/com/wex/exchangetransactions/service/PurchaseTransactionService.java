@@ -1,9 +1,9 @@
 package com.wex.exchangetransactions.service;
 
-import com.wex.exchangetransactions.dto.CreatePurchaseTransactionResponseDTO;
-import com.wex.exchangetransactions.dto.PurchaseTransactionDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionRequestDTO;
 
 public interface PurchaseTransactionService {
-    CreatePurchaseTransactionResponseDTO createPurchaseTransaction(PurchaseTransactionDTO dto);
-    PurchaseTransactionDTO getPurchaseTransactionById(String transactionId);
+    PurchaseTransactionResponseDTO createPurchaseTransaction(PurchaseTransactionRequestDTO dto);
+    PurchaseTransactionResponseDTO getPurchaseTransactionById(String transactionId);
 }

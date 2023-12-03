@@ -22,16 +22,8 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ProblemDetail> globalExceptionHandler(Exception ex){
         log.error("ExceptionHandler=globalExceptionHandler error=\"{}\"", ex.getLocalizedMessage());
-
-        String errorMessage;
-        if (Objects.nonNull(ex.getMessage())){
-            errorMessage = ex.getMessage();
-        }else {
-            errorMessage = DEFAULT_INTERNAL_SERVER_ERROR;
-        }
-
         ProblemDetail problemDetail =
-                ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, errorMessage);
+                ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, DEFAULT_INTERNAL_SERVER_ERROR);
         problemDetail.setProperty("timestamp", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problemDetail);
     }
