@@ -1,9 +1,8 @@
 package com.wex.exchangetransactions.model;
 
+import com.wex.exchangetransactions.annotation.RoundFractionalValue;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,23 +12,27 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
+
 @Entity
 @Getter
 @Table(name = "purchase_transaction")
 @AllArgsConstructor
+@NoArgsConstructor
 public class PurchaseTransactionModel {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private UUID id;
-    @NotNull(message = "transaction amount can't be null.")
-    @Min(value = 0, message = "the transaction amount must be greater than zero.")
+    @NotNull(message = TRANSACTION_AMOUNT_NOT_NULL_MESSAGE)
+    @Min(value = 0, message = TRANSACTION_AMOUNT_MIN_MESSAGE)
+    @RoundFractionalValue(fractionDigits = 2, message = TRANSACTION_AMOUNT_ROUNDED_MESSAGE)
     private Double amount;
-    @NotNull(message = "description can't be null.")
-    @Size(max = 50, message = "the description must have size between 0 and 50 characters.")
+    @NotNull(message = DESCRIPTION_NOT_NULL_MESSAGE)
+    @Size(max = 50, message = DESCRIPTION_SIZE_MESSAGE)
     private String description;
-    @NotNull(message = "transaction date can't be null.")
+    @NotNull(message = TRANSACTION_DATE_NOT_NULL_MESSAGE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate transactionDate;
-    @NotNull(message = "transaction timestamp can't be null.")
+    @NotNull(message = TRANSACTION_TIMESTAMP_NOT_NULL_MESSAGE)
     private LocalDateTime transactionTimestamp;
 }

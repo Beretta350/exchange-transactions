@@ -1,6 +1,10 @@
 package com.wex.exchangetransactions.unit.model;
+
 import com.wex.exchangetransactions.model.PurchaseTransactionModel;
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
@@ -8,8 +12,8 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PurchaseTransactionModelTest {
 
@@ -43,7 +47,7 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("the transaction amount must be greater than zero.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_MIN_MESSAGE);
     }
 
     @Test
@@ -61,7 +65,7 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("the description must have size between 0 and 50 characters.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_SIZE_MESSAGE);
     }
 
     @Test
@@ -76,7 +80,7 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("transaction amount can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -91,7 +95,7 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("description can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -106,7 +110,7 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("transaction date can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_DATE_NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -121,6 +125,21 @@ public class PurchaseTransactionModelTest {
         Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("transaction timestamp can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_TIMESTAMP_NOT_NULL_MESSAGE);
+    }
+
+    @Test
+    void purchaseTransactionModelFractionalSizeFailTest() {
+        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+                UUID.randomUUID(),
+                20.001,
+                "Some description",
+                LocalDate.now(),
+                LocalDateTime.now()
+        );
+        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_ROUNDED_MESSAGE);
     }
 }

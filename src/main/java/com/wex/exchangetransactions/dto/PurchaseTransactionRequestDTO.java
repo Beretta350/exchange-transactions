@@ -4,20 +4,24 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.wex.exchangetransactions.annotation.RoundFractionalValue;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
+
 public record PurchaseTransactionRequestDTO(
-        @NotNull(message = "transaction amount can't be null.")
-        @Min(value = 0, message = "the transaction amount must be greater than zero.")
+        @NotNull(message = TRANSACTION_AMOUNT_NOT_NULL_MESSAGE)
+        @Min(value = 0, message = TRANSACTION_AMOUNT_MIN_MESSAGE)
+        @RoundFractionalValue(fractionDigits = 2, message = TRANSACTION_AMOUNT_ROUNDED_MESSAGE)
         Double amount,
-        @NotNull(message = "description can't be null.")
-        @Size(max = 50, message = "the description must have size between 0 and 50 characters.")
+        @NotNull(message = DESCRIPTION_NOT_NULL_MESSAGE)
+        @Size(max = 50, message = DESCRIPTION_SIZE_MESSAGE)
         String description,
-        @NotNull(message = "transaction date can't be null.")
+        @NotNull(message = TRANSACTION_DATE_NOT_NULL_MESSAGE)
         @JsonSerialize(using = LocalDateSerializer.class)
         @JsonDeserialize(using = LocalDateDeserializer.class)
         LocalDate transactionDate) {

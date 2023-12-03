@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
-import static com.wex.exchangetransactions.exception.error.ErrorMessages.*;
+import static com.wex.exchangetransactions.exception.error.DefaultErrorMessages.*;
 
 @RestControllerAdvice
 @Slf4j

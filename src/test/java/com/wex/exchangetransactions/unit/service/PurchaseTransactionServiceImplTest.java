@@ -1,9 +1,8 @@
 package com.wex.exchangetransactions.unit.service;
 
-import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
 import com.wex.exchangetransactions.dto.PurchaseTransactionRequestDTO;
+import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
 import com.wex.exchangetransactions.exception.error.TransactionNotFoundException;
-import com.wex.exchangetransactions.mapper.PurchaseTransactionMapper;
 import com.wex.exchangetransactions.model.PurchaseTransactionModel;
 import com.wex.exchangetransactions.repository.PurchaseTransactionRepository;
 import com.wex.exchangetransactions.service.PurchaseTransactionServiceImpl;

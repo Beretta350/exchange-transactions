@@ -22,7 +22,7 @@ public class PurchaseTransactionController {
 
     @PostMapping()
     public ResponseEntity<PurchaseTransactionResponseDTO> purchaseTransaction(
-            @RequestBody @Valid PurchaseTransactionRequestDTO purchaseTransactionRequestDTO) {
+            @RequestBody @Valid PurchaseTransactionRequestDTO purchaseTransactionRequestDTO) throws Exception {
         log.info(
             "Class=TransactionController Method=createPurchaseTransaction amount={} description=\"{}\" transactionDate={}",
             purchaseTransactionRequestDTO.amount(), purchaseTransactionRequestDTO.description(), purchaseTransactionRequestDTO.transactionDate()
@@ -31,9 +31,9 @@ public class PurchaseTransactionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PurchaseTransactionResponseDTO> getPurchaseTransactionById(@PathVariable String id) {
+    public ResponseEntity<PurchaseTransactionResponseDTO> getPurchaseTransactionById(@PathVariable String id) throws Exception {
         log.info("Class=TransactionController Method=getPurchaseTransactionById id={}", id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.getPurchaseTransactionById(id));
+        return ResponseEntity.status(HttpStatus.OK).body(service.getPurchaseTransactionById(id));
     }
 
 }

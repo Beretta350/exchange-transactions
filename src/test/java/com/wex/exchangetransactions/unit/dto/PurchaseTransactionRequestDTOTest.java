@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.util.Set;
 
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PurchaseTransactionRequestDTOTest {
@@ -39,7 +40,7 @@ public class PurchaseTransactionRequestDTOTest {
         Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("the transaction amount must be greater than zero.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_MIN_MESSAGE);
     }
 
     @Test
@@ -55,7 +56,7 @@ public class PurchaseTransactionRequestDTOTest {
         Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("the description must have size between 0 and 50 characters.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_SIZE_MESSAGE);
     }
 
     @Test
@@ -68,7 +69,7 @@ public class PurchaseTransactionRequestDTOTest {
         Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("transaction amount can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -81,7 +82,7 @@ public class PurchaseTransactionRequestDTOTest {
         Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("description can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_NOT_NULL_MESSAGE);
     }
 
     @Test
@@ -94,6 +95,19 @@ public class PurchaseTransactionRequestDTOTest {
         Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo("transaction date can't be null.");
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_DATE_NOT_NULL_MESSAGE);
+    }
+
+    @Test
+    void PurchaseTransactionRequestDTOTransactionAmountFailTest() {
+        PurchaseTransactionRequestDTO transaction = new PurchaseTransactionRequestDTO(
+                100.001,
+                "Some description",
+                LocalDate.now()
+        );
+        Set<ConstraintViolation<PurchaseTransactionRequestDTO>> violations = validator.validate(transaction);
+
+        assertThat(violations).hasSize(1);
+        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_ROUNDED_MESSAGE);
     }
 }
