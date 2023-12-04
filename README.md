@@ -1,5 +1,14 @@
 # Exchange Transactions
 
+![Golang](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white)
+![Gradle](https://img.shields.io/badge/Gradle-02303A.svg?style=for-the-badge&logo=Gradle&logoColor=white)
+![Flyway](https://img.shields.io/badge/Flyway-CC0200.svg?style=for-the-badge&logo=Flyway&logoColor=white)
+![Jacoco](https://img.shields.io/badge/Jacoco-F01F7A.svg?style=for-the-badge&logo=Codecov&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white)
+![Postgres](https://img.shields.io/badge/Postgres-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![H2 Database](https://img.shields.io/badge/H2%20Database-07405E?style=for-the-badge&logo=Databricks&logoColor=white)
+
 ## Overview
 
 This is a rates of exchange transaction REST API for WEX assessment developed using Java with Spring Boot. 
