@@ -4,7 +4,7 @@ services:
   application:
     container_name: exchange-transactions
     environment:
-      - POSTGRES_URL=host=postgres user=postgres password=postgres dbname=localdb port=5432 sslmode=disable
+      - POSTGRES_URL=jdbc:postgresql://postgres:5432/localdb
     build:
       context: .
       dockerfile: Dockerfile

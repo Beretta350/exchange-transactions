@@ -1,5 +1,6 @@
 package com.wex.exchangetransactions.exception.handler;
 
+import com.wex.exchangetransactions.exception.error.ReportingRatesNotFoundException;
 import com.wex.exchangetransactions.exception.error.TransactionNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -11,6 +12,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -34,6 +36,14 @@ public class ValidationExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
     }
 
+    @ExceptionHandler(ReportingRatesNotFoundException.class)
+    public ResponseEntity<ProblemDetail> reportingNotFoundExceptionHandler(ReportingRatesNotFoundException ex){
+        log.error("ExceptionHandler=transactionNotFoundExceptionHandler error=\"{}\"", ex.getLocalizedMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND,ex.getMessage());
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problemDetail);
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ProblemDetail> handleValidationExceptions(ConstraintViolationException ex) {
         log.error("ExceptionHandler=handleValidationExceptions error=\"{}\"", ex.getLocalizedMessage());
@@ -48,6 +58,23 @@ public class ValidationExceptionHandler {
 
         ProblemDetail problemDetail =
                 ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errorMessage);
+        problemDetail.setProperty("timestamp", LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ProblemDetail> handleMissingRequestParametersExceptions(MissingServletRequestParameterException ex) {
+        log.error("ExceptionHandler=handleMissingRequestParametersExceptions error=\"{}\"", ex.getLocalizedMessage());
+
+        String errorMessage = null;
+        if(Objects.nonNull(ex.getMethodParameter())) {
+            errorMessage = ex.getMethodParameter().getParameterName() + " parameter is missing.";
+        }
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST,
+                Objects.nonNull(errorMessage)?errorMessage:DEFAULT_MISSING_PARAMETERS_ERROR
+        );
         problemDetail.setProperty("timestamp", LocalDateTime.now());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problemDetail);
     }

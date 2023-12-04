@@ -3,7 +3,7 @@ package com.wex.exchangetransactions.dto;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record PurchaseTransactionResponseDTO(
+public record TransactionResponseDTO(
         String id,
         Double amount,
         String description,

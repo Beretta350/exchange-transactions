@@ -1,16 +1,18 @@
 package com.wex.exchangetransactions.unit.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wex.exchangetransactions.controller.PurchaseTransactionController;
-import com.wex.exchangetransactions.dto.PurchaseTransactionRequestDTO;
-import com.wex.exchangetransactions.dto.PurchaseTransactionResponseDTO;
+import com.wex.exchangetransactions.annotation.RoundFractionalValue;
+import com.wex.exchangetransactions.controller.TransactionController;
+import com.wex.exchangetransactions.dto.TransactionRequestDTO;
+import com.wex.exchangetransactions.dto.TransactionResponseDTO;
+import com.wex.exchangetransactions.dto.TransactionRetrieveResponseDTO;
+import com.wex.exchangetransactions.exception.error.ReportingRatesNotFoundException;
 import com.wex.exchangetransactions.exception.error.TransactionNotFoundException;
 import com.wex.exchangetransactions.exception.handler.DefaultExceptionHandler;
 import com.wex.exchangetransactions.exception.handler.ValidationExceptionHandler;
-import com.wex.exchangetransactions.model.PurchaseTransactionModel;
-import com.wex.exchangetransactions.service.PurchaseTransactionService;
+import com.wex.exchangetransactions.model.TransactionModel;
+import com.wex.exchangetransactions.service.TransactionService;
 import jakarta.validation.*;
-import org.hibernate.TransactionManagementException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,6 +26,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,23 +35,23 @@ import java.util.Set;
 import java.util.UUID;
 
 import static com.wex.exchangetransactions.exception.error.DefaultErrorMessages.*;
-import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.DEFAULT_VALIDATION_ERROR;
-import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.TRANSACTION_AMOUNT_NOT_NULL_MESSAGE;
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(MockitoExtension.class)
-public class PurchaseTransactionControllerTest {
+public class TransactionControllerTest {
 
     private MockMvc mockMvc;
 
     @Mock
-    private PurchaseTransactionService service;
+    private TransactionService service;
 
     @InjectMocks
-    private PurchaseTransactionController controller;
+    private TransactionController controller;
 
     @BeforeEach
     void setUp() {
@@ -59,13 +62,13 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testPurchaseTransaction() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 21.25,
                 "Test description",
                 LocalDate.now()
         );
         String transactionId = UUID.randomUUID().toString();
-        PurchaseTransactionResponseDTO responseDTO = new PurchaseTransactionResponseDTO(
+        TransactionResponseDTO responseDTO = new TransactionResponseDTO(
                 transactionId,
                 21.25,
                 "Test description",
@@ -73,7 +76,7 @@ public class PurchaseTransactionControllerTest {
                 LocalDateTime.now()
         );
 
-        when(service.createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class))).thenReturn(responseDTO);
+        when(service.createPurchaseTransaction(any(TransactionRequestDTO.class))).thenReturn(responseDTO);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transaction/purchase")
@@ -90,7 +93,7 @@ public class PurchaseTransactionControllerTest {
     @Test
     void testGetPurchaseTransactionById() throws Exception {
         String transactionId = UUID.randomUUID().toString();
-        PurchaseTransactionResponseDTO responseDTO = new PurchaseTransactionResponseDTO(
+        TransactionResponseDTO responseDTO = new TransactionResponseDTO(
                 transactionId,
                 21.25,
                 "Test description",
@@ -110,14 +113,14 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testPurchaseTransactionWithInternalServerError() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 21.25,
                 "Test description",
                 LocalDate.now()
         );
 
         doThrow(new RuntimeException("Simulated error"))
-                .when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+                .when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transaction/purchase")
@@ -162,7 +165,7 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testValidationExceptionHandlerSpecificBindException() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 null,
                 "Test description",
                 LocalDate.now()
@@ -181,14 +184,14 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testValidationExceptionHandlerDefaultBindEmptyErrorsException() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 20.25,
                 "Test description",
                 LocalDate.now()
         );
 
         BindException bindException = new BindException(requestDTO, "purchaseTransactionRequestDTO");
-        doThrow(bindException).when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+        doThrow(bindException).when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transaction/purchase")
@@ -203,7 +206,7 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testValidationExceptionHandlerDefaultBindException() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 20.25,
                 "Test description",
                 LocalDate.now()
@@ -213,7 +216,7 @@ public class PurchaseTransactionControllerTest {
         BindException bindException = new BindException(requestDTO, "purchaseTransactionRequestDTO");
         bindException.addError(new FieldError("purchaseTransactionRequestDTO", "amount", DEFAULT_VALIDATION_ERROR));
 
-        doThrow(bindException).when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+        doThrow(bindException).when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -229,7 +232,7 @@ public class PurchaseTransactionControllerTest {
 
     @Test
     void testValidationExceptionHandlerDefaultBindWithNullMessageException() throws Exception {
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 20.25,
                 "Test description",
                 LocalDate.now()
@@ -239,7 +242,7 @@ public class PurchaseTransactionControllerTest {
         BindException bindException = new BindException(requestDTO, "purchaseTransactionRequestDTO");
         bindException.addError(new FieldError("purchaseTransactionRequestDTO", "amount", null));
 
-        doThrow(bindException).when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+        doThrow(bindException).when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -258,22 +261,23 @@ public class PurchaseTransactionControllerTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 21.25,
                 "Test description",
                 LocalDate.now()
         );
-        PurchaseTransactionModel mockedSavedTransaction = new PurchaseTransactionModel(
+        TransactionModel mockedSavedTransaction = new TransactionModel(
                 UUID.randomUUID(),
                 null,
                 "Test description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(mockedSavedTransaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(mockedSavedTransaction);
 
         ConstraintViolationException exception = new ConstraintViolationException(new HashSet<>(violations));
-        doThrow(exception).when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+        doThrow(exception).when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transaction/purchase")
@@ -291,22 +295,23 @@ public class PurchaseTransactionControllerTest {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         Validator validator = factory.getValidator();
 
-        PurchaseTransactionRequestDTO requestDTO = new PurchaseTransactionRequestDTO(
+        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
                 21.25,
                 "Test description",
                 LocalDate.now()
         );
-        PurchaseTransactionModel mockedSavedTransaction = new PurchaseTransactionModel(
+        TransactionModel mockedSavedTransaction = new TransactionModel(
                 UUID.randomUUID(),
                 21.25,
                 "Test description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(mockedSavedTransaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(mockedSavedTransaction);
 
         ConstraintViolationException exception = new ConstraintViolationException(new HashSet<>(violations));
-        doThrow(exception).when(service).createPurchaseTransaction(any(PurchaseTransactionRequestDTO.class));
+        doThrow(exception).when(service).createPurchaseTransaction(any(TransactionRequestDTO.class));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post("/transaction/purchase")
@@ -331,6 +336,102 @@ public class PurchaseTransactionControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
                 .andExpect(jsonPath("status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("detail").value(DEFAULT_DATE_FORMAT_ERROR))
+                .andReturn();
+    }
+
+    @Test
+    void testRetrieveTransaction() throws Exception {
+        String transactionId = UUID.randomUUID().toString();
+        String request = "/transaction/retrieve?".concat("id="+transactionId)
+                .concat("&currency=").concat("Real");
+        TransactionRetrieveResponseDTO responseDTO = new TransactionRetrieveResponseDTO(
+                transactionId,
+                "Test description",
+                LocalDate.now(),
+                21.25,
+                5.033,
+                (double) Math.round(21.25 * 5.033 * 100) / 100
+        );
+
+        when(service.retrievePurchaseTransaction(anyString(), anyString(), any())).thenReturn(responseDTO);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("transactionId").value(transactionId))
+                .andExpect(jsonPath("convertedAmount").value(106.95))
+                .andReturn();
+    }
+
+    @Test
+    void testRetrieveTransactionMissingParameterException() throws Exception {
+        String request = "/transaction/retrieve?".concat("currency=").concat("Real");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("detail").value("id parameter is missing."))
+                .andReturn();
+    }
+
+    @Test
+    void testRetrieveTransactionMissingParameterNoParamException() throws Exception {
+        String transactionId = UUID.randomUUID().toString();
+        String request = "/transaction/retrieve?".concat("id="+transactionId)
+                .concat("&currency=").concat("Real");
+        TransactionRetrieveResponseDTO responseDTO = new TransactionRetrieveResponseDTO(
+                transactionId,
+                "Test description",
+                LocalDate.now(),
+                21.25,
+                5.033,
+                (double) Math.round(21.25 * 5.033 * 100) / 100
+        );
+
+        MissingServletRequestParameterException exception = new MissingServletRequestParameterException("","");
+
+        doThrow(exception).when(service).retrievePurchaseTransaction(anyString(), anyString(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("detail").value(DEFAULT_MISSING_PARAMETERS_ERROR))
+                .andReturn();
+    }
+
+
+    @Test
+    void testRetrieveTransactionExchangeRatesNotFoundException() throws Exception {
+        String transactionId = UUID.randomUUID().toString();
+        String request = "/transaction/retrieve?".concat("id="+transactionId)
+                .concat("&currency=").concat("Real");
+        TransactionRetrieveResponseDTO responseDTO = new TransactionRetrieveResponseDTO(
+                transactionId,
+                "Test description",
+                LocalDate.now(),
+                21.25,
+                5.033,
+                (double) Math.round(21.25 * 5.033 * 100) / 100
+        );
+
+        ReportingRatesNotFoundException exception = new ReportingRatesNotFoundException();
+        doThrow(exception).when(service).retrievePurchaseTransaction(anyString(), anyString(), any());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get(request)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON))
+                .andExpect(jsonPath("status").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("detail").value(DEFAULT_NO_REPORTING_RATES_ERROR))
                 .andReturn();
     }
 }
