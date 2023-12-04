@@ -48,7 +48,7 @@ public class FiscalDataRatesExchangeClient implements ReportingRatesExchangeClie
 
         if (Objects.nonNull(country)){
             String filterCountry = "country:eq:".concat(country);
-            filter = String.join(filter,filterCountry);
+            filter = String.join(",", filter,filterCountry);
         }
 
         return UriComponentsBuilder.fromHttpUrl(baseUrl)
