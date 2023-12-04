@@ -4,6 +4,5 @@ CREATE TABLE IF NOT EXISTS "transaction_retrieve_history" (
     exchange_rate DOUBLE PRECISION NOT NULL,
     converted_amount DOUBLE PRECISION NOT NULL,
     retrieve_timestamp TIMESTAMP,
-    transaction_id_reference UUID REFERENCES "transaction"(id),
-    CONSTRAINT transaction_retrieve_history_transaction_id_key UNIQUE (transaction_id)
+    transaction_id_reference UUID REFERENCES "transaction"(id)
 );
