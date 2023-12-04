@@ -1,6 +1,7 @@
 package com.wex.exchangetransactions.unit.model;
 
-import com.wex.exchangetransactions.model.PurchaseTransactionModel;
+import com.wex.exchangetransactions.model.TransactionModel;
+import com.wex.exchangetransactions.model.TransactionRetrieveHistoryModel;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -9,13 +10,16 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class PurchaseTransactionModelTest {
+public class TransactionModelTest {
 
     private final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
     private final Validator validator = validatorFactory.getValidator();
@@ -23,12 +27,13 @@ public class PurchaseTransactionModelTest {
     @Test
     void purchaseTransactionModelValidationSuccessTest() {
         // Arrange
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 100.0,
                 "Some description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         Set<?> violations = validator.validate(transaction);
         assertThat(violations).isEmpty();
@@ -36,15 +41,16 @@ public class PurchaseTransactionModelTest {
 
     @Test
     void purchaseTransactionModelAmountLessThanZeroFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 -10.0,
                 "Some description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_MIN_MESSAGE);
@@ -54,15 +60,16 @@ public class PurchaseTransactionModelTest {
     void purchaseTransactionModelDescriptionTooLongFailTest() {
         // Arrange
         String longDescription = "Very very very very long description that exceeds the maximum length of 50 characters.";
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 100.0,
                 longDescription,
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_SIZE_MESSAGE);
@@ -70,14 +77,15 @@ public class PurchaseTransactionModelTest {
 
     @Test
     void purchaseTransactionModelNullAmountFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 null,
                 "Some description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_NOT_NULL_MESSAGE);
@@ -85,14 +93,15 @@ public class PurchaseTransactionModelTest {
 
     @Test
     void purchaseTransactionModelNullDescriptionFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 20.00,
                 null,
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(DESCRIPTION_NOT_NULL_MESSAGE);
@@ -100,46 +109,65 @@ public class PurchaseTransactionModelTest {
 
     @Test
     void purchaseTransactionModelNullTransactionDateFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 20.00,
                 "Some description",
                 null,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_DATE_NOT_NULL_MESSAGE);
     }
 
     @Test
-    void purchaseTransactionModelNullTransactionTimestampFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
-                UUID.randomUUID(),
-                20.00,
-                "Some description",
-                LocalDate.now(),
-                null
-        );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
-
-        assertThat(violations).hasSize(1);
-        assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_TIMESTAMP_NOT_NULL_MESSAGE);
-    }
-
-    @Test
     void purchaseTransactionModelFractionalSizeFailTest() {
-        PurchaseTransactionModel transaction = new PurchaseTransactionModel(
+        TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
                 20.001,
                 "Some description",
                 LocalDate.now(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
-        Set<ConstraintViolation<PurchaseTransactionModel>> violations = validator.validate(transaction);
+        Set<ConstraintViolation<TransactionModel>> violations = validator.validate(transaction);
 
         assertThat(violations).hasSize(1);
         assertThat(violations.iterator().next().getMessage()).isEqualTo(TRANSACTION_AMOUNT_ROUNDED_MESSAGE);
+    }
+
+    @Test
+    void purchaseTransactionModelGetTransactionRetrieveTest() {
+        TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
+                new TransactionModel(
+                        UUID.randomUUID(),
+                        20.001,
+                        "Some description",
+                        LocalDate.now(),
+                        LocalDateTime.now(),
+                        null
+                ),
+                1.5,
+                100.0
+        );
+
+        List<TransactionRetrieveHistoryModel> history = new ArrayList<>();
+        history.add(historyModel);
+        TransactionModel transaction = new TransactionModel(
+                UUID.randomUUID(),
+                20.001,
+                "Some description",
+                LocalDate.now(),
+                LocalDateTime.now(),
+                history
+        );
+
+
+
+        List<TransactionRetrieveHistoryModel> transactionHistory = transaction.getTransactionRetrieveHistory();
+        assertEquals(transactionHistory.get(0), historyModel);
     }
 }

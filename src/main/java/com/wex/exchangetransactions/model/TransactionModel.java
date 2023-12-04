@@ -10,16 +10,17 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 
 @Entity
 @Getter
-@Table(name = "purchase_transaction")
+@Table(name = "transaction")
 @AllArgsConstructor
 @NoArgsConstructor
-public class PurchaseTransactionModel {
+public class TransactionModel {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private UUID id;
@@ -33,6 +34,12 @@ public class PurchaseTransactionModel {
     @NotNull(message = TRANSACTION_DATE_NOT_NULL_MESSAGE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate transactionDate;
-    @NotNull(message = TRANSACTION_TIMESTAMP_NOT_NULL_MESSAGE)
     private LocalDateTime transactionTimestamp;
+    @OneToMany(mappedBy = "purchaseTransaction", cascade = CascadeType.ALL)
+    private List<TransactionRetrieveHistoryModel> transactionRetrieveHistory;
+
+    @PrePersist
+    protected void onCreate() {
+        this.transactionTimestamp = LocalDateTime.now();
+    }
 }
