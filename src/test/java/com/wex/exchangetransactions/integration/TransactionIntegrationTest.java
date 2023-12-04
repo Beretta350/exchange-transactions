@@ -92,6 +92,7 @@ public class TransactionIntegrationTest {
 
         TransactionResponseDTO createResponse =
                 restTemplate.postForObject(baseUrl + request, innerDto, TransactionResponseDTO.class);
+        assertNotNull(createResponse);
         assertEquals(20.75, createResponse.amount());
         assertEquals("Test description", createResponse.description());
 

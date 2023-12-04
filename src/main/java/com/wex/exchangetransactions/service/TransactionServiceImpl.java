@@ -65,7 +65,7 @@ public class TransactionServiceImpl implements TransactionService {
                 exchangeRates.exchangeRate()
         );
         TransactionRetrieveHistoryModel retrieveHistory =
-                new TransactionRetrieveHistoryModel(purchaseTransaction, exchangeRates.exchangeRate(), convertedAmount);
+                new TransactionRetrieveHistoryModel(purchaseTransaction, currency, exchangeRates.exchangeRate(), convertedAmount);
         historyRepository.save(retrieveHistory);
         return TransactionRetrieveResponseDTO.buildResponseDTO(purchaseTransactionDTO, exchangeRates.exchangeRate(), convertedAmount);
     }

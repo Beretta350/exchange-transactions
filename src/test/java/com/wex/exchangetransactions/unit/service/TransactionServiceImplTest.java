@@ -168,7 +168,7 @@ public class TransactionServiceImplTest {
         );
 
         TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
-                1L, exchangeRate, convertedAmount, LocalDateTime.now(), new TransactionModel()
+                1L, "Real", exchangeRate, convertedAmount, LocalDateTime.now(), new TransactionModel()
         );
 
         ReportingRatesExchangeDTO exchangeRates = new ReportingRatesExchangeDTO(LocalDate.now(), "Brazil", "Real", exchangeRate);

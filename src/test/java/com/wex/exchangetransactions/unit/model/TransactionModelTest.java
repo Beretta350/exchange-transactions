@@ -150,6 +150,7 @@ public class TransactionModelTest {
                         LocalDateTime.now(),
                         null
                 ),
+                "Real",
                 1.5,
                 100.0
         );
