@@ -14,8 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.RETRIEVE_CONVERTED_AMOUNT_NOT_NULL_MESSAGE;
-import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.RETRIEVE_EXCHANGE_RATE_NOT_NULL_MESSAGE;
+import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionRetrieveHistoryModelTest {
@@ -38,6 +37,7 @@ class TransactionRetrieveHistoryModelTest {
     void testValidModel() {
         TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
                 purchaseTransaction,
+                "Real",
                 1.5,
                 100.0
         );
@@ -50,6 +50,7 @@ class TransactionRetrieveHistoryModelTest {
     void testInvalidExchangeRate() {
         TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
                 purchaseTransaction,
+                "Real",
                 null,  // Invalid: Exchange rate is null
                 100.0
         );
@@ -63,6 +64,7 @@ class TransactionRetrieveHistoryModelTest {
     void testInvalidConvertedAmount() {
         TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
                 purchaseTransaction,
+                "Real",
                 1.5,
                 null
         );
@@ -70,5 +72,20 @@ class TransactionRetrieveHistoryModelTest {
         Set<ConstraintViolation<TransactionRetrieveHistoryModel>> violations = validator.validate(historyModel);
         assertEquals(1, violations.size());
         assertEquals(RETRIEVE_CONVERTED_AMOUNT_NOT_NULL_MESSAGE, violations.iterator().next().getMessage());
+    }
+
+
+    @Test
+    void testInvalidCurrency() {
+        TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
+                purchaseTransaction,
+                null,
+                1.5,
+                100.0
+        );
+
+        Set<ConstraintViolation<TransactionRetrieveHistoryModel>> violations = validator.validate(historyModel);
+        assertEquals(1, violations.size());
+        assertEquals(RETRIEVE_CURRENCY_NOT_NULL_MESSAGE, violations.iterator().next().getMessage());
     }
 }

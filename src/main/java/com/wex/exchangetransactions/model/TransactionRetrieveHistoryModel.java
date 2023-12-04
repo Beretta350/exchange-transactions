@@ -21,6 +21,9 @@ public class TransactionRetrieveHistoryModel {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull(message = RETRIEVE_CURRENCY_NOT_NULL_MESSAGE)
+    private String currency;
+
     @NotNull(message = RETRIEVE_EXCHANGE_RATE_NOT_NULL_MESSAGE)
     private Double exchangeRate;
 
@@ -40,10 +43,12 @@ public class TransactionRetrieveHistoryModel {
 
     public TransactionRetrieveHistoryModel(
             TransactionModel purchaseTransaction,
+            String currency,
             Double exchangeRate,
             Double convertedAmount){
         this.id = null;
         this.exchangeRate = exchangeRate;
+        this.currency=currency;
         this.convertedAmount = convertedAmount;
         this.retrieveTimestamp = null;
         this.purchaseTransaction = purchaseTransaction;
