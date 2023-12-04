@@ -13,7 +13,7 @@
 
 This is a rates of exchange transaction REST API for WEX assessment developed using Java with Spring Boot. 
 The application facilitates the storage and retrieval of exchange transactions. 
-All of this consuming the Treasury Reporting Rates of Exchange API and returning the amount of dollar in the transaction converted in a desired currency.
+All of it consuming the Treasury Reporting Rates of Exchange API and returning the amount of dollar in the transaction converted in a desired currency.
 
 ### Treasury Reporting Rates of Exchange API documentation
 
