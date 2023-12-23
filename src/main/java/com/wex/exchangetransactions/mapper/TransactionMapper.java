@@ -7,6 +7,7 @@ import com.wex.exchangetransactions.util.TransactionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.RoundingMode;
 import java.util.UUID;
 
 @Component
@@ -41,7 +42,7 @@ public class TransactionMapper {
         );
         return new TransactionModel(
                 null,
-                TransactionUtil.roundAmount(dto.amount()),
+                dto.amount().setScale(2, RoundingMode.HALF_EVEN),
                 dto.description(),
                 dto.transactionDate(),
                 null,
@@ -55,7 +56,7 @@ public class TransactionMapper {
         );
         return new TransactionModel(
                 UUID.fromString(dto.id()),
-                TransactionUtil.roundAmount(dto.amount()),
+                dto.amount().setScale(2, RoundingMode.HALF_EVEN),
                 dto.description(),
                 dto.transactionDate(),
                 dto.transactionTimestamp(),

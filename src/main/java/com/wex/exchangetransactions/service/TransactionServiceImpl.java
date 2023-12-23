@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.UUID;
@@ -60,7 +61,7 @@ public class TransactionServiceImpl implements TransactionService {
                 reportingRatesExchangeClient.getExchangeRates(currency, purchaseTransactionDTO.transactionDate(), country);
 
         TransactionModel purchaseTransaction = TransactionMapper.toModel(purchaseTransactionDTO);
-        Double convertedAmount = TransactionUtil.convertAndRoundRetrieve(
+        BigDecimal convertedAmount = TransactionUtil.convertAndRoundRetrieve(
                 purchaseTransaction.getAmount(),
                 exchangeRates.exchangeRate()
         );

@@ -8,6 +8,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class TransactionModelTest {
         // Arrange
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                100.0,
+                BigDecimal.valueOf(100.0),
                 "Some description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -43,7 +44,7 @@ public class TransactionModelTest {
     void purchaseTransactionModelAmountLessThanZeroFailTest() {
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                -10.0,
+                BigDecimal.valueOf(-10.0),
                 "Some description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -62,7 +63,7 @@ public class TransactionModelTest {
         String longDescription = "Very very very very long description that exceeds the maximum length of 50 characters.";
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                100.0,
+                BigDecimal.valueOf(100.0),
                 longDescription,
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -95,7 +96,7 @@ public class TransactionModelTest {
     void purchaseTransactionModelNullDescriptionFailTest() {
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                20.00,
+                BigDecimal.valueOf(20.00),
                 null,
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -111,7 +112,7 @@ public class TransactionModelTest {
     void purchaseTransactionModelNullTransactionDateFailTest() {
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                20.00,
+                BigDecimal.valueOf(20.00),
                 "Some description",
                 null,
                 LocalDateTime.now(),
@@ -127,7 +128,7 @@ public class TransactionModelTest {
     void purchaseTransactionModelFractionalSizeFailTest() {
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                20.001,
+                BigDecimal.valueOf(20.001),
                 "Some description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -144,7 +145,7 @@ public class TransactionModelTest {
         TransactionRetrieveHistoryModel historyModel = new TransactionRetrieveHistoryModel(
                 new TransactionModel(
                         UUID.randomUUID(),
-                        20.001,
+                        BigDecimal.valueOf(20.001),
                         "Some description",
                         LocalDate.now(),
                         LocalDateTime.now(),
@@ -152,14 +153,14 @@ public class TransactionModelTest {
                 ),
                 "Real",
                 1.5,
-                100.0
+                BigDecimal.valueOf(100.0)
         );
 
         List<TransactionRetrieveHistoryModel> history = new ArrayList<>();
         history.add(historyModel);
         TransactionModel transaction = new TransactionModel(
                 UUID.randomUUID(),
-                20.001,
+                BigDecimal.valueOf(20.001),
                 "Some description",
                 LocalDate.now(),
                 LocalDateTime.now(),

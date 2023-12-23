@@ -5,6 +5,7 @@ import com.wex.exchangetransactions.mapper.TransactionMapper;
 import com.wex.exchangetransactions.model.TransactionModel;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -18,7 +19,7 @@ public class TransactionMapperTest {
         UUID transactionId = UUID.randomUUID();
         TransactionModel model = new TransactionModel(
                 transactionId,
-                12.22,
+                BigDecimal.valueOf(12.22),
                 "Test Description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -36,7 +37,7 @@ public class TransactionMapperTest {
     void toDtoTest() {
         UUID transactionId = UUID.randomUUID();
         TransactionModel model = new TransactionModel(
-                transactionId, 12.22, "Test Description", LocalDate.now(), LocalDateTime.now(), null);
+                transactionId, BigDecimal.valueOf(12.22), "Test Description", LocalDate.now(), LocalDateTime.now(), null);
 
         TransactionRequestDTO dto = TransactionMapper.toRequestDto(model);
 
@@ -49,12 +50,12 @@ public class TransactionMapperTest {
     @Test
     void toModelTest() {
         TransactionRequestDTO dto =
-                new TransactionRequestDTO(30.54321, "Test Description", LocalDate.now());
+                new TransactionRequestDTO(BigDecimal.valueOf(30.54321), "Test Description", LocalDate.now());
 
         TransactionModel model = TransactionMapper.toModel(dto);
 
         assertNotNull(model);
-        assertEquals(30.54, model.getAmount());
+        assertEquals(BigDecimal.valueOf(30.54), model.getAmount());
         assertEquals(dto.description(), model.getDescription());
     }
 }

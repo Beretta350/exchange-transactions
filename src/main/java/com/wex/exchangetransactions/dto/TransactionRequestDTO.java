@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
@@ -17,7 +18,7 @@ import static com.wex.exchangetransactions.exception.error.ValidationErrorMessag
 public record TransactionRequestDTO(
         @NotNull(message = TRANSACTION_AMOUNT_NOT_NULL_MESSAGE)
         @Min(value = 0, message = TRANSACTION_AMOUNT_MIN_MESSAGE)
-        Double amount,
+        BigDecimal amount,
         @NotNull(message = DESCRIPTION_NOT_NULL_MESSAGE)
         @Size(max = 50, message = DESCRIPTION_SIZE_MESSAGE)
         String description,

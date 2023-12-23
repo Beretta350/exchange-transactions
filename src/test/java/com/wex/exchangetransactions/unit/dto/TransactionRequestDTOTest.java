@@ -7,6 +7,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -21,7 +22,7 @@ public class TransactionRequestDTOTest {
     void PurchaseTransactionRequestDTOValidationSuccessTest() {
         // Arrange
         TransactionRequestDTO transaction = new TransactionRequestDTO(
-                100.0,
+                BigDecimal.valueOf(100.0),
                 "Some description",
                 LocalDate.now()
         );
@@ -32,7 +33,7 @@ public class TransactionRequestDTOTest {
     @Test
     void PurchaseTransactionRequestDTOAmountLessThanZeroFailTest() {
         TransactionRequestDTO transaction = new TransactionRequestDTO(
-                -100.0,
+                BigDecimal.valueOf(-100.0),
                 "Some description",
                 LocalDate.now()
         );
@@ -48,7 +49,7 @@ public class TransactionRequestDTOTest {
         // Arrange
         String longDescription = "Very very very very long description that exceeds the maximum length of 50 characters.";
         TransactionRequestDTO transaction = new TransactionRequestDTO(
-                100.0,
+                BigDecimal.valueOf(100.0),
                 longDescription,
                 LocalDate.now()
         );
@@ -75,7 +76,7 @@ public class TransactionRequestDTOTest {
     @Test
     void PurchaseTransactionRequestDTONullDescriptionFailTest() {
         TransactionRequestDTO transaction = new TransactionRequestDTO(
-                100.0,
+                BigDecimal.valueOf(100.0),
                 null,
                 LocalDate.now()
         );
@@ -88,7 +89,7 @@ public class TransactionRequestDTOTest {
     @Test
     void PurchaseTransactionRequestDTONullTransactionDateFailTest() {
         TransactionRequestDTO transaction = new TransactionRequestDTO(
-                100.0,
+                BigDecimal.valueOf(100.0),
                 "Some description",
                 null
         );

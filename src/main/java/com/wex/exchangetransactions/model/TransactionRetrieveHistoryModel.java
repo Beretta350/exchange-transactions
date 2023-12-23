@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static com.wex.exchangetransactions.exception.error.ValidationErrorMessages.*;
@@ -28,7 +29,7 @@ public class TransactionRetrieveHistoryModel {
     private Double exchangeRate;
 
     @NotNull(message = RETRIEVE_CONVERTED_AMOUNT_NOT_NULL_MESSAGE)
-    private Double convertedAmount;
+    private BigDecimal convertedAmount;
 
     private LocalDateTime retrieveTimestamp;
 
@@ -45,7 +46,7 @@ public class TransactionRetrieveHistoryModel {
             TransactionModel purchaseTransaction,
             String currency,
             Double exchangeRate,
-            Double convertedAmount){
+            BigDecimal convertedAmount){
         this.id = null;
         this.exchangeRate = exchangeRate;
         this.currency=currency;

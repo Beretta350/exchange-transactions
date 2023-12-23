@@ -7,20 +7,18 @@ import com.wex.exchangetransactions.service.TransactionServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 @Component
 @Slf4j
 public class TransactionUtil {
     private TransactionUtil(){}
-    public static Double convertAndRoundRetrieve(Double originalAmount,
+    public static BigDecimal convertAndRoundRetrieve(BigDecimal originalAmount,
                                                  Double exchangeRate){
         log.info("Class=TransactionUtil Method=convertAndRoundRetrieve originalAmount={} exchangeRate={}",
                 originalAmount,exchangeRate);
-        double convertedAmount = originalAmount * exchangeRate;
-        return roundAmount(convertedAmount);
-    }
-
-    public static Double roundAmount(Double amount){
-        log.info("Class=TransactionUtil Method=roundAmount amount={}", amount);
-        return (double) Math.round(amount * 100) / 100;
+        return BigDecimal.valueOf(originalAmount.doubleValue() * exchangeRate)
+                .setScale(2, RoundingMode.HALF_EVEN);
     }
 }
