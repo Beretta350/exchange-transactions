@@ -28,6 +28,8 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -63,14 +65,14 @@ public class TransactionControllerTest {
     @Test
     void testPurchaseTransaction() throws Exception {
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
         String transactionId = UUID.randomUUID().toString();
         TransactionResponseDTO responseDTO = new TransactionResponseDTO(
                 transactionId,
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now()
@@ -95,7 +97,7 @@ public class TransactionControllerTest {
         String transactionId = UUID.randomUUID().toString();
         TransactionResponseDTO responseDTO = new TransactionResponseDTO(
                 transactionId,
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now()
@@ -114,7 +116,7 @@ public class TransactionControllerTest {
     @Test
     void testPurchaseTransactionWithInternalServerError() throws Exception {
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
@@ -185,7 +187,7 @@ public class TransactionControllerTest {
     @Test
     void testValidationExceptionHandlerDefaultBindEmptyErrorsException() throws Exception {
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                20.25,
+                BigDecimal.valueOf(20.25),
                 "Test description",
                 LocalDate.now()
         );
@@ -207,7 +209,7 @@ public class TransactionControllerTest {
     @Test
     void testValidationExceptionHandlerDefaultBindException() throws Exception {
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                20.25,
+                BigDecimal.valueOf(20.25),
                 "Test description",
                 LocalDate.now()
         );
@@ -233,7 +235,7 @@ public class TransactionControllerTest {
     @Test
     void testValidationExceptionHandlerDefaultBindWithNullMessageException() throws Exception {
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                20.25,
+                BigDecimal.valueOf(20.25),
                 "Test description",
                 LocalDate.now()
         );
@@ -262,7 +264,7 @@ public class TransactionControllerTest {
         Validator validator = factory.getValidator();
 
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
@@ -296,13 +298,13 @@ public class TransactionControllerTest {
         Validator validator = factory.getValidator();
 
         TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
         TransactionModel mockedSavedTransaction = new TransactionModel(
                 UUID.randomUUID(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -348,9 +350,9 @@ public class TransactionControllerTest {
                 transactionId,
                 "Test description",
                 LocalDate.now(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 5.033,
-                (double) Math.round(21.25 * 5.033 * 100) / 100
+                BigDecimal.valueOf(21.25 * 5.033).setScale(2, RoundingMode.HALF_EVEN)
         );
 
         when(service.retrievePurchaseTransaction(anyString(), anyString(), any())).thenReturn(responseDTO);
@@ -388,9 +390,9 @@ public class TransactionControllerTest {
                 transactionId,
                 "Test description",
                 LocalDate.now(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 5.033,
-                (double) Math.round(21.25 * 5.033 * 100) / 100
+                BigDecimal.valueOf(21.25 * 5.033).setScale(2, RoundingMode.HALF_EVEN)
         );
 
         MissingServletRequestParameterException exception = new MissingServletRequestParameterException("","");
@@ -417,9 +419,9 @@ public class TransactionControllerTest {
                 transactionId,
                 "Test description",
                 LocalDate.now(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 5.033,
-                (double) Math.round(21.25 * 5.033 * 100) / 100
+                BigDecimal.valueOf(21.25 * 5.033).setScale(2, RoundingMode.HALF_EVEN)
         );
 
         ReportingRatesNotFoundException exception = new ReportingRatesNotFoundException();

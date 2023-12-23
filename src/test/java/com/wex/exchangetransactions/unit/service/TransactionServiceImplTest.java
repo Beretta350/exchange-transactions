@@ -21,6 +21,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -51,13 +52,13 @@ public class TransactionServiceImplTest {
     @Test
     void createPurchaseTransactionTest() {
         TransactionRequestDTO inputDto = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
         TransactionModel mockedSavedTransaction = new TransactionModel(
                 UUID.randomUUID(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -78,13 +79,13 @@ public class TransactionServiceImplTest {
     @Test
     void createPurchaseTransactionExceptionTest() {
         TransactionRequestDTO inputDto = new TransactionRequestDTO(
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now()
         );
         TransactionModel mockedSavedTransaction = new TransactionModel(
                 UUID.randomUUID(),
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -108,7 +109,7 @@ public class TransactionServiceImplTest {
         UUID transactionId = UUID.randomUUID();
         TransactionModel mockedTransaction = new TransactionModel(
                 transactionId,
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 LocalDate.now(),
                 LocalDateTime.now(),
@@ -143,8 +144,8 @@ public class TransactionServiceImplTest {
         UUID uuidTransactionId = UUID.randomUUID();
         String transactionId = uuidTransactionId.toString();
         Double exchangeRate = 5.634;
-        Double originalAmount = 21.25;
-        Double convertedAmount = TransactionUtil.convertAndRoundRetrieve(originalAmount, exchangeRate);
+        BigDecimal originalAmount = BigDecimal.valueOf(21.25);
+        BigDecimal convertedAmount = TransactionUtil.convertAndRoundRetrieve(originalAmount, exchangeRate);
         LocalDate transactionDate = LocalDate.now();
         String currency = "Real";
         String country = "Brazil";
@@ -161,7 +162,7 @@ public class TransactionServiceImplTest {
         // Mock dependencies
         TransactionResponseDTO purchaseTransactionDTO = new TransactionResponseDTO(
                 transactionId,
-                21.25,
+                BigDecimal.valueOf(21.25),
                 "Test description",
                 transactionDate,
                 LocalDateTime.now()

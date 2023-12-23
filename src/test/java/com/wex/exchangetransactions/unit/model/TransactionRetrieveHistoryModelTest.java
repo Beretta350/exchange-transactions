@@ -9,6 +9,7 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -29,7 +30,7 @@ class TransactionRetrieveHistoryModelTest {
 
         // Initialize any required objects or dependencies
         purchaseTransaction = new TransactionModel(
-            UUID.randomUUID(), 12.22, "Test Description", LocalDate.now(), LocalDateTime.now(), null
+            UUID.randomUUID(), BigDecimal.valueOf(12.22), "Test Description", LocalDate.now(), LocalDateTime.now(), null
         );
     }
 
@@ -39,7 +40,7 @@ class TransactionRetrieveHistoryModelTest {
                 purchaseTransaction,
                 "Real",
                 1.5,
-                100.0
+                BigDecimal.valueOf(100.0)
         );
 
         Set<ConstraintViolation<TransactionRetrieveHistoryModel>> violations = validator.validate(historyModel);
@@ -52,7 +53,7 @@ class TransactionRetrieveHistoryModelTest {
                 purchaseTransaction,
                 "Real",
                 null,  // Invalid: Exchange rate is null
-                100.0
+                BigDecimal.valueOf(100.0)
         );
 
         Set<ConstraintViolation<TransactionRetrieveHistoryModel>> violations = validator.validate(historyModel);
@@ -81,7 +82,7 @@ class TransactionRetrieveHistoryModelTest {
                 purchaseTransaction,
                 null,
                 1.5,
-                100.0
+                BigDecimal.valueOf(100.0)
         );
 
         Set<ConstraintViolation<TransactionRetrieveHistoryModel>> violations = validator.validate(historyModel);

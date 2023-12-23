@@ -1,5 +1,6 @@
 package com.wex.exchangetransactions.integration;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.junit5.WireMockRuntimeInfo;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -65,11 +67,9 @@ public class TransactionIntegrationTest {
     @Test
     public void testPurchaseTransaction() throws Exception {
         String request = "/transaction/purchase";
-        TransactionRequestDTO requestDTO = new TransactionRequestDTO(
-                20.75,
-                "Test description",
-                LocalDate.now()
-        );
+        LocalDate transactionDate = LocalDate.now();
+        TransactionRequestDTO requestDTO =
+                new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post(request)
@@ -86,14 +86,14 @@ public class TransactionIntegrationTest {
     public void testGetPurchaseTransaction() throws Exception {
         LocalDate transactionDate = LocalDate.now();
         TransactionRequestDTO innerDto =
-                new TransactionRequestDTO(20.75, "Test description", transactionDate);
+                new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
         String request = "/purchase";
 
         TransactionResponseDTO createResponse =
                 restTemplate.postForObject(baseUrl + request, innerDto, TransactionResponseDTO.class);
         assertNotNull(createResponse);
-        assertEquals(20.75, createResponse.amount());
+        assertEquals(BigDecimal.valueOf(20.75), createResponse.amount());
         assertEquals("Test description", createResponse.description());
 
         request = "/transaction/purchase/".concat(createResponse.id());
@@ -113,14 +113,14 @@ public class TransactionIntegrationTest {
     public void testRetrievePurchaseTransaction(WireMockRuntimeInfo wmRuntimeInfo) throws Exception {
         LocalDate transactionDate = LocalDate.now();
         TransactionRequestDTO innerDto =
-                new TransactionRequestDTO(20.75, "Test description", transactionDate);
+                new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
         String requestPurchase = "/purchase";
 
         TransactionResponseDTO createResponse =
                 restTemplate.postForObject(baseUrl + requestPurchase, innerDto, TransactionResponseDTO.class);
         assertNotNull(createResponse);
-        assertEquals(20.75, createResponse.amount());
+        assertEquals(20.75, createResponse.amount().doubleValue());
         assertEquals("Test description", createResponse.description());
 
         String requestRetrieve = "/transaction/retrieve?".concat("id="+createResponse.id())
@@ -152,3 +152,4 @@ public class TransactionIntegrationTest {
                 .andReturn();
     }
 }
+

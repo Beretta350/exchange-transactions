@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,7 +28,7 @@ public class TransactionModel {
     @NotNull(message = TRANSACTION_AMOUNT_NOT_NULL_MESSAGE)
     @Min(value = 0, message = TRANSACTION_AMOUNT_MIN_MESSAGE)
     @RoundFractionalValue(fractionDigits = 2, message = TRANSACTION_AMOUNT_ROUNDED_MESSAGE)
-    private Double amount;
+    private BigDecimal amount;
     @NotNull(message = DESCRIPTION_NOT_NULL_MESSAGE)
     @Size(max = 50, message = DESCRIPTION_SIZE_MESSAGE)
     private String description;

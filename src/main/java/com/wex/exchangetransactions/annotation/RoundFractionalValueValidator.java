@@ -3,8 +3,10 @@ package com.wex.exchangetransactions.annotation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.math.BigDecimal;
+
 //Annotation only for double values!
-public class RoundFractionalValueValidator implements ConstraintValidator<RoundFractionalValue, Double> {
+public class RoundFractionalValueValidator implements ConstraintValidator<RoundFractionalValue, BigDecimal> {
     private int fractionDigits;
 
     @Override
@@ -13,12 +15,12 @@ public class RoundFractionalValueValidator implements ConstraintValidator<RoundF
     }
 
     @Override
-    public boolean isValid(Double value, ConstraintValidatorContext context) {
+    public boolean isValid(BigDecimal value, ConstraintValidatorContext context) {
         if (value == null) {
             return true;
         }
 
-        String[] parts = String.valueOf(value).split("\\.");
+        String[] parts = String.valueOf(value.doubleValue()).split("\\.");
         return parts[1].length() <= this.fractionDigits;
     }
 }
