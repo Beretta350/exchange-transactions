@@ -19,6 +19,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,20 +44,10 @@ public class TransactionIntegrationTest {
 
     private String baseUrl = "http://localhost";
 
-    private static RestTemplate restTemplate;
-
     @Autowired
     protected MockMvc mockMvc;
 
-    @Autowired
-    private TransactionRepository h2Repository;
-
     public TransactionIntegrationTest() {
-    }
-
-    @BeforeAll
-    public static void init() {
-        restTemplate = new RestTemplate();
     }
 
     @BeforeEach
@@ -68,18 +59,19 @@ public class TransactionIntegrationTest {
     public void testPurchaseTransaction() throws Exception {
         String request = "/transaction/purchase";
         LocalDate transactionDate = LocalDate.now();
-        TransactionRequestDTO requestDTO =
+        TransactionRequestDTO innerDto =
                 new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .post(request)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(new ObjectMapper().writeValueAsString(requestDTO)))
+                        .content(new ObjectMapper().writeValueAsString(innerDto)))
                 .andExpect(status().isCreated())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("amount").value(20.75))
                 .andExpect(jsonPath("description").value("Test description"))
                 .andReturn();
+
     }
 
     @Test
@@ -88,18 +80,24 @@ public class TransactionIntegrationTest {
         TransactionRequestDTO innerDto =
                 new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
-        String request = "/purchase";
+        String postRequest = "/transaction/purchase";
 
-        TransactionResponseDTO createResponse =
-                restTemplate.postForObject(baseUrl + request, innerDto, TransactionResponseDTO.class);
-        assertNotNull(createResponse);
-        assertEquals(BigDecimal.valueOf(20.75), createResponse.amount());
-        assertEquals("Test description", createResponse.description());
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post(postRequest)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(innerDto)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("amount").value(20.75))
+                .andExpect(jsonPath("description").value("Test description"))
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        TransactionResponseDTO createResponse = new ObjectMapper().readValue(responseContent, TransactionResponseDTO.class);
 
-        request = "/transaction/purchase/".concat(createResponse.id());
+        String getRequest = "/transaction/purchase/".concat(createResponse.id());
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get(request))
+                        .get(getRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("id").value(createResponse.id()))
@@ -115,13 +113,19 @@ public class TransactionIntegrationTest {
         TransactionRequestDTO innerDto =
                 new TransactionRequestDTO(BigDecimal.valueOf(20.75), "Test description", transactionDate);
 
-        String requestPurchase = "/purchase";
+        String postRequest = "/transaction/purchase";
 
-        TransactionResponseDTO createResponse =
-                restTemplate.postForObject(baseUrl + requestPurchase, innerDto, TransactionResponseDTO.class);
-        assertNotNull(createResponse);
-        assertEquals(20.75, createResponse.amount().doubleValue());
-        assertEquals("Test description", createResponse.description());
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders
+                        .post(postRequest)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(innerDto)))
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("amount").value(20.75))
+                .andExpect(jsonPath("description").value("Test description"))
+                .andReturn();
+        String responseContent = result.getResponse().getContentAsString();
+        TransactionResponseDTO createResponse = new ObjectMapper().readValue(responseContent, TransactionResponseDTO.class);
 
         String requestRetrieve = "/transaction/retrieve?".concat("id="+createResponse.id())
                 .concat("&currency=").concat("Real");
